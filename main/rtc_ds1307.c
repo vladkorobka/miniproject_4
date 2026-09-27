@@ -80,7 +80,9 @@ void ds1307_rtc_init(void)
     bool marker_ok = present && read_regs(DS1307_RAM_MARKER_REG, ram, sizeof ram) &&
                      ds1307_marker_matches(ram);
 
-    switch (rtc_startup_decide(present, new_firmware, marker_ok, regs_ok)) {
+    rtc_start_t decision = rtc_startup_decide(present, new_firmware, marker_ok, regs_ok);
+
+    switch (decision) {
     case RTC_START_ABSENT:
         ESP_LOGW(TAG, "DS1307 не відповідає на 0x%02X - час показуватиметься як --:--", RTC_ADDR);
         time_valid = false;
@@ -88,11 +90,7 @@ void ds1307_rtc_init(void)
 
     case RTC_START_SET_FROM_BUILD:
         time_valid = set_from_build();
-        /* Мітку зберігаємо лише після успішного запису: інакше RTC,
-         * підключений пізніше, так і не отримав би час. */
-        if (time_valid) {
-            settings_set_build_stamp(BUILD_STAMP);
-        } else {
+        if (!time_valid) {
             ESP_LOGW(TAG, "не вдалося записати час у DS1307");
         }
         break;
@@ -106,6 +104,10 @@ void ds1307_rtc_init(void)
         time_valid = true;
         log_time("час RTC", &now);
         break;
+    }
+
+    if (rtc_startup_consumes_stamp(new_firmware, decision)) {
+        settings_set_build_stamp(BUILD_STAMP);
     }
 }
 

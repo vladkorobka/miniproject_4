@@ -39,3 +39,9 @@ typedef enum {
 
 /* Алгоритм старту (спек, розділ 5.3). regs_ok - ds1307_decode() повернула true. */
 rtc_start_t rtc_startup_decide(bool present, bool new_firmware, bool marker_ok, bool regs_ok);
+
+/* Чи зберігати BUILD_STAMP у NVS після старту. Мітка "витрачається" на першому
+ * ж старті нової прошивки, навіть якщо RTC не відповів або запис не вдався:
+ * RTC, підключений пізніше, інакше отримав би застарілий час збірки і показав
+ * би його як валідний. Краще --:-- до наступної прошивки. */
+bool rtc_startup_consumes_stamp(bool new_firmware, rtc_start_t decision);

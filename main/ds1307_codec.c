@@ -79,3 +79,9 @@ rtc_start_t rtc_startup_decide(bool present, bool new_firmware, bool marker_ok, 
     }
     return RTC_START_INVALID;
 }
+
+bool rtc_startup_consumes_stamp(bool new_firmware, rtc_start_t decision)
+{
+    (void)decision;   /* рішення не впливає: мітка одноразова для кожної прошивки */
+    return new_firmware;
+}

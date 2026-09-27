@@ -120,6 +120,16 @@ static void test_decide_valid_needs_marker_and_regs(void)
     TEST_ASSERT_EQUAL(RTC_START_INVALID, rtc_startup_decide(true, false, true, false));
 }
 
+static void test_stamp_consumed_on_first_boot_even_without_rtc(void)
+{
+    /* RTC, підключений пізніше, не повинен отримати застарілий час збірки. */
+    TEST_ASSERT_TRUE(rtc_startup_consumes_stamp(true, RTC_START_ABSENT));
+    TEST_ASSERT_TRUE(rtc_startup_consumes_stamp(true, RTC_START_SET_FROM_BUILD));
+    TEST_ASSERT_FALSE(rtc_startup_consumes_stamp(false, RTC_START_VALID));
+    TEST_ASSERT_FALSE(rtc_startup_consumes_stamp(false, RTC_START_INVALID));
+    TEST_ASSERT_FALSE(rtc_startup_consumes_stamp(false, RTC_START_ABSENT));
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -137,5 +147,6 @@ int main(void)
     RUN_TEST(test_decide_absent_wins_over_new_firmware);
     RUN_TEST(test_decide_new_firmware_sets_time);
     RUN_TEST(test_decide_valid_needs_marker_and_regs);
+    RUN_TEST(test_stamp_consumed_on_first_boot_even_without_rtc);
     return UNITY_END();
 }
