@@ -13,6 +13,9 @@
 #include "settings.h"
 #include "i2c_bus.h"
 #include "rtc_ds1307.h"
+#include "menu.h"
+#include "ui_state.h"
+#include "display.h"
 
 #include "esp_err.h"
 
@@ -38,8 +41,14 @@ void app_main(void)
      * Після app_main шиною користується лише display_task. */
     i2c_bus_init();
     i2c_bus_scan();
-    rtc_init();
+    ds1307_rtc_init();
+
+    /* Початковий стан меню з NVS - до старту задач, що його читають. */
+    ui_state_t initial;
+    menu_init(&initial, settings_get_portion(), settings_get_auto_enabled());
+    ui_state_init(&initial);
 
     xTaskCreate(input_task, "input_task", 4096, NULL, 5, NULL);
     xTaskCreate(feeder_task, "feeder_task", 4096, NULL, 5, NULL);
+    xTaskCreate(display_task, "display_task", 4096, NULL, 4, NULL);
 }

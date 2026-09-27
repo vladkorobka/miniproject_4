@@ -13,8 +13,15 @@ idf_component_register(
         "rtc_time.c"
         "ds1307_codec.c"
         "rtc_ds1307.c"
+        "menu.c"
+        "fb.c"
+        "ui_text.c"
+        "ui.c"
+        "ui_state.c"
+        "oled.c"
+        "display.c"
     INCLUDE_DIRS "."
-    REQUIRES nvs_flash esp_timer esp_driver_gpio esp_driver_ledc esp_driver_i2c
+    REQUIRES nvs_flash esp_timer esp_driver_gpio esp_driver_ledc esp_driver_i2c esp_lcd
 )
 
 # Мітка часу збірки для RTC (спек, розділ 5.1). Custom target завжди

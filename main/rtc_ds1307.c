@@ -58,7 +58,7 @@ static bool set_from_build(void)
     return true;
 }
 
-void rtc_init(void)
+void ds1307_rtc_init(void)
 {
     i2c_device_config_t conf = {
         .dev_addr_length = I2C_ADDR_BIT_LEN_7,
@@ -109,7 +109,7 @@ void rtc_init(void)
     }
 }
 
-bool rtc_read(rtc_datetime_t *out)
+bool ds1307_rtc_read(rtc_datetime_t *out)
 {
     if (!time_valid) {
         return false;

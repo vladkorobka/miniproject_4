@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "freertos/FreeRTOS.h"
@@ -24,6 +25,10 @@ void feeder_task(void *arg);
 /* Періодичний таймер для авто-режиму. */
 void auto_timer_start(uint32_t interval_sec);
 void auto_timer_stop(void);
+
+/* Секунд до наступної автоподачі (округлено вгору).
+ * false - таймер не запущено (AUTO вимкнено). Безпечно з будь-якої задачі. */
+bool auto_timer_remaining_sec(int32_t *sec);
 
 static inline uint8_t clamp_u8(int value, int lo, int hi)
 {

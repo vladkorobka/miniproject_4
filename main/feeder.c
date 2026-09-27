@@ -13,43 +13,78 @@
 #include "motor.h"
 #include "buttons.h"
 #include "settings.h"
+#include "ui_text.h"
 
 #include "esp_err.h"
 #include "esp_log.h"
 
 static const char *TAG = "feeder";
 
+/* Таймер створюється один раз і лише запускається/зупиняється: display_task
+ * читає дедлайн паралельно, тож хендл не можна видаляти під ним. */
 static esp_timer_handle_t auto_timer = NULL;
+static int64_t auto_interval_us = 0;
+
+/* Час наступного спрацювання; 0 = таймер зупинено. esp_timer_get_expiry_time()
+ * не підтримує періодичні таймери, тому дедлайн ведемо самі. */
+static int64_t next_deadline_us = 0;
+static portMUX_TYPE deadline_lock = portMUX_INITIALIZER_UNLOCKED;
 
 static void auto_timer_callback(void *arg)
 {
+    taskENTER_CRITICAL(&deadline_lock);
+    /* Колбек міг уже стартувати, коли таймер зупинили, - тоді дедлайн не оживляємо. */
+    if (next_deadline_us != 0) {
+        next_deadline_us += auto_interval_us;
+    }
+    taskEXIT_CRITICAL(&deadline_lock);
+
     feeder_event_t evt = { .type = EVT_AUTO_TIMER, .value = 0 };
     xQueueSend(event_queue, &evt, 0);
 }
 
 void auto_timer_start(uint32_t interval_sec)
 {
-    if (auto_timer != NULL) {
+    if (auto_timer == NULL) {
+        esp_timer_create_args_t args = {
+            .callback = &auto_timer_callback,
+            .name = "auto_feed_timer",
+        };
+        ESP_ERROR_CHECK(esp_timer_create(&args, &auto_timer));
+    }
+    if (esp_timer_is_active(auto_timer)) {
         return; /* вже запущений */
     }
 
-    esp_timer_create_args_t args = {
-        .callback = &auto_timer_callback,
-        .name = "auto_feed_timer",
-    };
-    ESP_ERROR_CHECK(esp_timer_create(&args, &auto_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(auto_timer,
-                                             (uint64_t)interval_sec * 1000000ULL));
+    auto_interval_us = (int64_t)interval_sec * 1000000;
+    taskENTER_CRITICAL(&deadline_lock);
+    next_deadline_us = esp_timer_get_time() + auto_interval_us;
+    taskEXIT_CRITICAL(&deadline_lock);
+    ESP_ERROR_CHECK(esp_timer_start_periodic(auto_timer, (uint64_t)auto_interval_us));
 }
 
 void auto_timer_stop(void)
 {
-    if (auto_timer == NULL) {
+    if (auto_timer == NULL || !esp_timer_is_active(auto_timer)) {
         return;
     }
     ESP_ERROR_CHECK(esp_timer_stop(auto_timer));
-    ESP_ERROR_CHECK(esp_timer_delete(auto_timer));
-    auto_timer = NULL;
+    taskENTER_CRITICAL(&deadline_lock);
+    next_deadline_us = 0;
+    taskEXIT_CRITICAL(&deadline_lock);
+}
+
+bool auto_timer_remaining_sec(int32_t *sec)
+{
+    taskENTER_CRITICAL(&deadline_lock);
+    int64_t deadline = next_deadline_us;
+    taskEXIT_CRITICAL(&deadline_lock);
+
+    if (deadline == 0) {
+        return false;
+    }
+    *sec = ui_countdown_sec(deadline, esp_timer_get_time());
+    return true;
 }
 
 void feed_cycle(uint8_t portion_size)
