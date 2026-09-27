@@ -1,0 +1,9 @@
+# Значення за замовчуванням для проєкту. sdkconfig в .gitignore, тому все,
+# що має пережити свіжий clone, задається тут.
+
+# Плата ESP32-S3-N16R8: 16 МБ flash (за замовчуванням IDF ставить 2 МБ).
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_ESPTOOLPY_FLASHSIZE="16MB"
+
+# Таргет теж тут: без sdkconfig IDF інакше збирає під esp32.
+CONFIG_IDF_TARGET="esp32s3"
