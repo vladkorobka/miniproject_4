@@ -62,10 +62,5 @@
 #define SERVO_OPEN_DEG          90
 #define SERVO_CLOSED_DEG        0
 
-/* ---------- Зумер: параметри sweep-сигналу ---------- */
-#define BUZZ_FREQ_START         200
-#define BUZZ_FREQ_END           800
-#define BUZZ_SWEEP_MS           500
-
 /* ---------- Авто-режим ---------- */
 #define AUTO_INTERVAL_SEC       30

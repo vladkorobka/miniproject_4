@@ -9,6 +9,7 @@
 #include "feeder_types.h"
 #include "leds.h"
 #include "buzzer.h"
+#include "melody.h"
 #include "servo.h"
 #include "motor.h"
 #include "buttons.h"
@@ -95,8 +96,10 @@ void feed_cycle(uint8_t portion_size)
     ESP_LOGI(TAG, "цикл насипання: порція=%u, мотор=%d мс",
              portion_size, portion_size * MOTOR_MS_PER_PORTION);
 
-    /* 1. Попереджувальний звуковий сигнал */
-    buzzer_sweep(BUZZ_FREQ_START, BUZZ_FREQ_END, BUZZ_SWEEP_MS);
+    /* 1. Попереджувальна мелодія: фанфара і "мяу" */
+    buzzer_play(feed_melody, feed_melody_len);
+    buzzer_sweep(MEOW_HZ_START, MEOW_HZ_PEAK, MEOW_UP_MS);
+    buzzer_sweep(MEOW_HZ_PEAK, MEOW_HZ_END, MEOW_DOWN_MS);
 
     /* 2. Відкрити заслінку приймача */
     servo_set_angle(SERVO_OPEN_DEG);

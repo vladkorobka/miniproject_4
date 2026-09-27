@@ -19,7 +19,7 @@ void buzzer_init(void)
         .speed_mode      = BUZZER_MODE,
         .timer_num       = BUZZER_TIMER,
         .duty_resolution = BUZZER_RES,
-        .freq_hz         = BUZZ_FREQ_START,
+        .freq_hz         = NOTE_C6,   /* стартова; кожна нота задає свою */
         /* Те саме джерело такту, що й у серво - див. коментар у servo.c. */
         .clk_cfg         = LEDC_USE_APB_CLK,
     };
@@ -36,6 +36,19 @@ void buzzer_init(void)
     ESP_ERROR_CHECK(ledc_channel_config(&channel_conf));
 }
 
+static void tone_on(void)
+{
+    int half_duty = (1 << BUZZER_RES_BITS) / 2; /* 50% duty = чистий тон */
+    ESP_ERROR_CHECK(ledc_set_duty(BUZZER_MODE, BUZZER_CHANNEL, half_duty));
+    ESP_ERROR_CHECK(ledc_update_duty(BUZZER_MODE, BUZZER_CHANNEL));
+}
+
+static void tone_off(void)
+{
+    ESP_ERROR_CHECK(ledc_set_duty(BUZZER_MODE, BUZZER_CHANNEL, 0));
+    ESP_ERROR_CHECK(ledc_update_duty(BUZZER_MODE, BUZZER_CHANNEL));
+}
+
 void buzzer_sweep(int freq_start, int freq_end, int duration_ms)
 {
     const int step_ms = 10;
@@ -46,10 +59,8 @@ void buzzer_sweep(int freq_start, int freq_end, int duration_ms)
         steps = 1;
     }
 
-    int half_duty = (1 << BUZZER_RES_BITS) / 2; /* 50% duty = чистий тон */
-
-    ESP_ERROR_CHECK(ledc_set_duty(BUZZER_MODE, BUZZER_CHANNEL, half_duty));
-    ESP_ERROR_CHECK(ledc_update_duty(BUZZER_MODE, BUZZER_CHANNEL));
+    ESP_ERROR_CHECK(ledc_set_freq(BUZZER_MODE, BUZZER_TIMER, freq_start));
+    tone_on();
 
     for (int i = 0; i <= steps; i++) {
         int freq = freq_start + (freq_end - freq_start) * i / steps;
@@ -57,6 +68,18 @@ void buzzer_sweep(int freq_start, int freq_end, int duration_ms)
         vTaskDelay(pdMS_TO_TICKS(step_ms));
     }
 
-    ESP_ERROR_CHECK(ledc_set_duty(BUZZER_MODE, BUZZER_CHANNEL, 0));
-    ESP_ERROR_CHECK(ledc_update_duty(BUZZER_MODE, BUZZER_CHANNEL));
+    tone_off();
+}
+
+void buzzer_play(const note_t *notes, size_t count)
+{
+    for (size_t i = 0; i < count; i++) {
+        if (notes[i].hz != REST) {
+            ESP_ERROR_CHECK(ledc_set_freq(BUZZER_MODE, BUZZER_TIMER, notes[i].hz));
+            tone_on();
+        }
+        vTaskDelay(pdMS_TO_TICKS(notes[i].ms));
+        tone_off();
+        vTaskDelay(pdMS_TO_TICKS(NOTE_GAP_MS));
+    }
 }

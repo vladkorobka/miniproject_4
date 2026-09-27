@@ -11,7 +11,7 @@ OUT="$ROOT/build_host"
 mkdir -p "$OUT"
 
 PURE_SRCS=()
-for name in rtc_time ds1307_codec menu fb ui_text ui; do
+for name in rtc_time ds1307_codec menu fb ui_text ui melody; do
     if [ -f "$ROOT/main/$name.c" ]; then
         PURE_SRCS+=("$ROOT/main/$name.c")
     fi

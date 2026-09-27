@@ -20,6 +20,7 @@ idf_component_register(
         "ui_state.c"
         "oled.c"
         "display.c"
+        "melody.c"
     INCLUDE_DIRS "."
     REQUIRES nvs_flash esp_timer esp_driver_gpio esp_driver_ledc esp_driver_i2c esp_lcd
 )
