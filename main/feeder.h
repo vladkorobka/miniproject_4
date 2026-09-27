@@ -19,7 +19,8 @@ void feed_cycle(uint8_t portion_size);
 /* Задача, що обробляє кнопки (енкодер шле події напряму з ISR). */
 void input_task(void *arg);
 
-/* Задача, що володіє станом (portion_size, auto_enabled) і викликає feed_cycle(). */
+/* Задача, що володіє станом (ui_state_t): передає події в menu_handle()
+ * і виконує повернуті дії - LED, NVS, таймер, feed_cycle(). */
 void feeder_task(void *arg);
 
 /* Періодичний таймер для авто-режиму. */
@@ -29,10 +30,3 @@ void auto_timer_stop(void);
 /* Секунд до наступної автоподачі (округлено вгору).
  * false - таймер не запущено (AUTO вимкнено). Безпечно з будь-якої задачі. */
 bool auto_timer_remaining_sec(int32_t *sec);
-
-static inline uint8_t clamp_u8(int value, int lo, int hi)
-{
-    if (value < lo) return (uint8_t)lo;
-    if (value > hi) return (uint8_t)hi;
-    return (uint8_t)value;
-}

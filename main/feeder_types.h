@@ -9,8 +9,7 @@
 typedef enum {
     EVT_ENCODER_DELTA,    /* поворот енкодера, value = +1 або -1 */
     EVT_BTN_MANUAL,       /* натиснута кнопка ручного насипання */
-    EVT_BTN_AUTO_TOGGLE,  /* застаріла: прибирається разом зі старим feeder_task */
-    EVT_AUTO_TIMER,       /* спрацював таймер авто-режиму */
+    EVT_AUTO_TIMER,      /* спрацював таймер авто-режиму */
     EVT_ENC_CLICK,        /* клік енкодера (GPIO6) */
     EVT_BTN_BACK,         /* кнопка «Назад» (GPIO8) */
 } event_type_t;

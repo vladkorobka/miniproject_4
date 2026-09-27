@@ -6,7 +6,7 @@
 /* ---------- Енкодер KY-040 ---------- */
 #define ENCODER_CLK_PIN     GPIO_NUM_4
 #define ENCODER_DT_PIN      GPIO_NUM_5
-#define ENCODER_SW_PIN      GPIO_NUM_6   /* зарезервовано, поки не використовується */
+#define ENCODER_SW_PIN      GPIO_NUM_6   /* клік: відкрити меню / підтвердити вибір */
 
 /* Скільки квадратурних переходів припадає на один клік (детент).
  * У KY-040 це повний цикл = 4. Якщо один клік дає два кроки порції -
@@ -15,7 +15,7 @@
 
 /* ---------- Кнопки ---------- */
 #define BTN_MANUAL_PIN      GPIO_NUM_7
-#define BTN_AUTO_PIN        GPIO_NUM_8
+#define BTN_BACK_PIN        GPIO_NUM_8   /* «Назад»: попереднє меню / вихід з меню */
 
 /* ---------- LED порції (шкала-градусник, 1 клік енкодера = 1 LED) ---------- */
 #define LED_PORTION_1_PIN   GPIO_NUM_9
@@ -68,4 +68,4 @@
 #define BUZZ_SWEEP_MS           500
 
 /* ---------- Авто-режим ---------- */
-#define AUTO_INTERVAL_SEC 10
+#define AUTO_INTERVAL_SEC       30
