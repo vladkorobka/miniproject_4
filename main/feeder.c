@@ -153,6 +153,9 @@ void feeder_task(void *arg)
             feed_cycle(portion_size);
             xQueueReset(event_queue);
             break;
+
+        default:
+            break;
         }
     }
 }

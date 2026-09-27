@@ -1,6 +1,7 @@
 #pragma once
 
 #include "driver/gpio.h"
+#include "feeder_types.h"   /* PORTION_MIN / PORTION_MAX */
 
 /* ---------- Енкодер KY-040 ---------- */
 #define ENCODER_CLK_PIN     GPIO_NUM_4
@@ -34,10 +35,6 @@
 
 /* ---------- DC-мотор (через транзистор, простий on/off) ---------- */
 #define MOTOR_PIN           GPIO_NUM_17
-
-/* ---------- Порція ---------- */
-#define PORTION_MIN             1
-#define PORTION_MAX             4
 
 /* ---------- Часові константи циклу насипання ---------- */
 #define MOTOR_MS_PER_PORTION    1500   /* калібрується емпірично під диск */
