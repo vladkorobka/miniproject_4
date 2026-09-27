@@ -36,6 +36,21 @@
 /* ---------- DC-мотор (через транзистор, простий on/off) ---------- */
 #define MOTOR_PIN           GPIO_NUM_17
 
+/* ---------- Шина I2C: RTC DS1307 + OLED SSD1306 ----------
+ * GPIO46 не використовується: strapping-пін режиму завантаження,
+ * підтяжка до 1 заважає входу в режим прошивки. */
+#define I2C_SDA_PIN         GPIO_NUM_18
+#define I2C_SCL_PIN         GPIO_NUM_3
+#define I2C_FREQ_HZ         100000
+#define I2C_TIMEOUT_MS      50
+
+#define RTC_ADDR            0x68
+#define OLED_ADDR           0x3C
+
+/* Час між збіркою і стартом плати (прошивка + завантаження), додається
+ * до часу збірки при встановленні RTC. */
+#define RTC_BUILD_OFFSET_SEC    30
+
 /* ---------- Часові константи циклу насипання ---------- */
 #define MOTOR_MS_PER_PORTION    1500   /* калібрується емпірично під диск */
 #define GATE_LINGER_MS          3500   /* час, щоб корм висипався з приймача */

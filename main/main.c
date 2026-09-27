@@ -11,6 +11,8 @@
 #include "servo.h"
 #include "motor.h"
 #include "settings.h"
+#include "i2c_bus.h"
+#include "rtc_ds1307.h"
 
 #include "esp_err.h"
 
@@ -22,7 +24,7 @@ void app_main(void)
     event_queue = xQueueCreate(10, sizeof(feeder_event_t));
     ESP_ERROR_CHECK(event_queue != NULL ? ESP_OK : ESP_ERR_NO_MEM);
 
-    /* NVS - першим: feeder_task одразу читає з нього відновлений стан. */
+    /* NVS - першим: з нього відновлюється стан і мітка збірки для RTC. */
     settings_init();
 
     leds_init();
@@ -31,6 +33,12 @@ void app_main(void)
     buzzer_init();
     servo_init();
     motor_init();
+
+    /* I2C: скан у лог для діагностики, потім алгоритм старту RTC.
+     * Після app_main шиною користується лише display_task. */
+    i2c_bus_init();
+    i2c_bus_scan();
+    rtc_init();
 
     xTaskCreate(input_task, "input_task", 4096, NULL, 5, NULL);
     xTaskCreate(feeder_task, "feeder_task", 4096, NULL, 5, NULL);

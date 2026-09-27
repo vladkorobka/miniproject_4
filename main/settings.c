@@ -12,6 +12,7 @@ static const char *TAG = "settings";
 #define NVS_NAMESPACE   "feeder"
 #define KEY_PORTION     "portion"
 #define KEY_AUTO        "auto_on"
+#define KEY_BUILD_STAMP "build_stamp"
 
 static nvs_handle_t handle;
 static bool nvs_ready = false;
@@ -92,4 +93,27 @@ void settings_set_auto_enabled(bool enabled)
     }
     cached_auto = enabled;
     store_u8(KEY_AUTO, enabled ? 1 : 0);
+}
+
+bool settings_get_build_stamp(char *out, size_t out_len)
+{
+    if (!nvs_ready) {
+        return false;
+    }
+    size_t len = out_len;
+    return nvs_get_str(handle, KEY_BUILD_STAMP, out, &len) == ESP_OK;
+}
+
+void settings_set_build_stamp(const char *stamp)
+{
+    if (!nvs_ready) {
+        return;
+    }
+    esp_err_t err = nvs_set_str(handle, KEY_BUILD_STAMP, stamp);
+    if (err == ESP_OK) {
+        err = nvs_commit(handle);
+    }
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "запис %s не вдався: %s", KEY_BUILD_STAMP, esp_err_to_name(err));
+    }
 }
