@@ -26,7 +26,7 @@ bool oled_init(void)
     esp_lcd_panel_io_i2c_config_t io_conf = {
         .dev_addr = OLED_ADDR,
         .scl_speed_hz = I2C_FREQ_HZ,
-        .control_phase_bytes = 1,   /* за даташитом SSD1306 */
+        .control_phase_bytes = 1,
         .dc_bit_offset = 6,
         .lcd_cmd_bits = 8,
         .lcd_param_bits = 8,
@@ -36,7 +36,7 @@ bool oled_init(void)
     };
     esp_lcd_panel_dev_config_t panel_conf = {
         .bits_per_pixel = 1,
-        .reset_gpio_num = -1,   /* RST модуля не виведено */
+        .reset_gpio_num = -1,
         .vendor_config = &ssd_conf,
     };
 

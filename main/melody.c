@@ -1,10 +1,10 @@
 #include "melody.h"
 
 const note_t feed_melody[] = {
-    { NOTE_G5, 100 }, { NOTE_C6, 100 }, { NOTE_E6, 100 },   /* та-да-да */
-    { NOTE_G6, 250 },                                       /* ДАМ! */
+    { NOTE_G5, 100 }, { NOTE_C6, 100 }, { NOTE_E6, 100 },
+    { NOTE_G6, 250 },
     { REST,    80 },
-    { NOTE_E6, 120 }, { NOTE_G6, 450 },                     /* та-ДААМ! */
+    { NOTE_E6, 120 }, { NOTE_G6, 450 },
     { REST,    120 },
 };
 

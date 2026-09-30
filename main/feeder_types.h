@@ -2,16 +2,15 @@
 
 #include <stdint.h>
 
-/* ---------- Порція (тут, а не в config.h: потрібна чистій логіці без ESP-IDF) ---------- */
-#define PORTION_MIN             1
-#define PORTION_MAX             4
+#define PORTION_MIN 1
+#define PORTION_MAX 4
 
 typedef enum {
-    EVT_ENCODER_DELTA,    /* поворот енкодера, value = +1 або -1 */
-    EVT_BTN_MANUAL,       /* натиснута кнопка ручного насипання */
-    EVT_AUTO_TIMER,      /* спрацював таймер авто-режиму */
-    EVT_ENC_CLICK,        /* клік енкодера (GPIO6) */
-    EVT_BTN_BACK,         /* кнопка «Назад» (GPIO8) */
+    EVT_ENCODER_DELTA,
+    EVT_BTN_MANUAL,
+    EVT_AUTO_TIMER,
+    EVT_ENC_CLICK,
+    EVT_BTN_BACK,
 } event_type_t;
 
 typedef struct {
@@ -20,6 +19,6 @@ typedef struct {
 } feeder_event_t;
 
 typedef enum {
-    LED_AUTO,     /* червоний: AUTO on/off */
-    LED_FEEDING,  /* зелений: іде насипання */
+    LED_AUTO,
+    LED_FEEDING,
 } led_id_t;

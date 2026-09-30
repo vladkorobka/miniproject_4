@@ -25,9 +25,6 @@ idf_component_register(
     REQUIRES nvs_flash esp_timer esp_driver_gpio esp_driver_ledc esp_driver_i2c esp_lcd
 )
 
-# Мітка часу збірки для RTC (спек, розділ 5.1). Custom target завжди
-# вважається застарілим, тож заголовок оновлюється на кожну збірку -
-# на відміну від __DATE__/__TIME__, що змінюються лише при перекомпіляції файлу.
 set(BUILD_TIME_H "${CMAKE_CURRENT_BINARY_DIR}/build_time.h")
 add_custom_target(gen_build_time ALL
     COMMAND ${CMAKE_COMMAND} -DOUT=${BUILD_TIME_H} -P ${CMAKE_CURRENT_SOURCE_DIR}/gen_build_time.cmake

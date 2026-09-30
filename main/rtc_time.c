@@ -37,8 +37,6 @@ void rtc_datetime_add_seconds(rtc_datetime_t *t, uint32_t seconds)
     total = t->hour + total / 60;
     t->hour = (uint8_t)(total % 24);
 
-    /* Доби додаються по одній: так перенос через кінець місяця
-     * і року лишається тривіальним. */
     for (uint32_t days = total / 24; days > 0; days--) {
         if (t->day < rtc_days_in_month(t->year, t->month)) {
             t->day++;

@@ -2,8 +2,8 @@
 
 #include <string.h>
 
-#define REG_SEC_CH      0x80  /* Clock Halt: 1 = осцилятор зупинено */
-#define REG_HOUR_12H    0x40  /* 1 = 12-годинний режим */
+#define REG_SEC_CH      0x80
+#define REG_HOUR_12H    0x40
 
 const uint8_t ds1307_marker[DS1307_MARKER_LEN] = { 'F', 'D', 'R', '4' };
 
@@ -24,9 +24,9 @@ bool bcd_is_valid(uint8_t bcd)
 
 void ds1307_encode(const rtc_datetime_t *t, uint8_t regs[DS1307_TIME_REG_COUNT])
 {
-    regs[0] = bcd_encode(t->second);                    /* CH = 0 */
+    regs[0] = bcd_encode(t->second);
     regs[1] = bcd_encode(t->minute);
-    regs[2] = bcd_encode(t->hour);                      /* біт 6 = 0 -> 24h */
+    regs[2] = bcd_encode(t->hour);
     regs[3] = 1;
     regs[4] = bcd_encode(t->day);
     regs[5] = bcd_encode(t->month);
@@ -82,6 +82,6 @@ rtc_start_t rtc_startup_decide(bool present, bool new_firmware, bool marker_ok, 
 
 bool rtc_startup_consumes_stamp(bool new_firmware, rtc_start_t decision)
 {
-    (void)decision;   /* рішення не впливає: мітка одноразова для кожної прошивки */
+    (void)decision;
     return new_firmware;
 }

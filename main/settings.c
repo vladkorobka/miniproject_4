@@ -16,9 +16,6 @@ static const char *TAG = "settings";
 
 static nvs_handle_t handle;
 static bool nvs_ready = false;
-
-/* Кеш у RAM: читаємо NVS один раз на старті, далі працюємо з кешем
- * і пишемо тільки дельту. */
 static uint8_t cached_portion = PORTION_MIN;
 static bool    cached_auto    = false;
 
@@ -26,7 +23,6 @@ void settings_init(void)
 {
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        /* Розділ пошкоджений або від старішої версії - стираємо і пробуємо ще раз. */
         ESP_ERROR_CHECK(nvs_flash_erase());
         err = nvs_flash_init();
     }
@@ -34,7 +30,6 @@ void settings_init(void)
 
     err = nvs_open(NVS_NAMESPACE, NVS_READWRITE, &handle);
     if (err != ESP_OK) {
-        /* Не фатально: годівничка працюватиме, просто без запам'ятовування. */
         ESP_LOGW(TAG, "nvs_open failed (%s), працюємо на значеннях за замовчуванням",
                  esp_err_to_name(err));
         return;

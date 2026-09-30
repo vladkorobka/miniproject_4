@@ -45,7 +45,7 @@ void fb_draw_char(fb_t *fb, int x, int y, char c)
     for (int row = 0; row < 8; row++) {
         uint8_t bits = font8x8_basic[ch][row];
         for (int col = 0; col < 8; col++) {
-            bool on = (bits >> col) & 1;   /* біт 0 - крайній лівий піксель */
+            bool on = (bits >> col) & 1;
             fb_set_pixel(fb, x + col, y + 2 * row, on);
             fb_set_pixel(fb, x + col, y + 2 * row + 1, on);
         }

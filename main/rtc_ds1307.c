@@ -24,7 +24,7 @@ static bool read_regs(uint8_t reg, uint8_t *buf, size_t len)
 
 static bool write_regs(uint8_t reg, const uint8_t *data, size_t len)
 {
-    uint8_t buf[1 + DS1307_TIME_REG_COUNT];   /* найбільший запис - регістри часу */
+    uint8_t buf[1 + DS1307_TIME_REG_COUNT];
     if (len > DS1307_TIME_REG_COUNT) {
         return false;
     }
@@ -48,7 +48,7 @@ static bool set_from_build(void)
     rtc_datetime_add_seconds(&t, RTC_BUILD_OFFSET_SEC);
 
     uint8_t regs[DS1307_TIME_REG_COUNT];
-    ds1307_encode(&t, regs);   /* заодно CH = 0 і 24h */
+    ds1307_encode(&t, regs);
 
     if (!write_regs(0x00, regs, sizeof regs) ||
         !write_regs(DS1307_RAM_MARKER_REG, ds1307_marker, DS1307_MARKER_LEN)) {

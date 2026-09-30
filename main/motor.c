@@ -2,7 +2,6 @@
 
 #include "driver/gpio.h"
 #include "esp_err.h"
-
 #include "config.h"
 
 void motor_init(void)

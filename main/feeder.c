@@ -23,20 +23,15 @@
 
 static const char *TAG = "feeder";
 
-/* Таймер створюється один раз і лише запускається/зупиняється: display_task
- * читає дедлайн паралельно, тож хендл не можна видаляти під ним. */
 static esp_timer_handle_t auto_timer = NULL;
 static int64_t auto_interval_us = 0;
 
-/* Час наступного спрацювання; 0 = таймер зупинено. esp_timer_get_expiry_time()
- * не підтримує періодичні таймери, тому дедлайн ведемо самі. */
 static int64_t next_deadline_us = 0;
 static portMUX_TYPE deadline_lock = portMUX_INITIALIZER_UNLOCKED;
 
 static void auto_timer_callback(void *arg)
 {
     taskENTER_CRITICAL(&deadline_lock);
-    /* Колбек міг уже стартувати, коли таймер зупинили, - тоді дедлайн не оживляємо. */
     if (next_deadline_us != 0) {
         next_deadline_us += auto_interval_us;
     }
@@ -56,7 +51,7 @@ void auto_timer_start(uint32_t interval_sec)
         ESP_ERROR_CHECK(esp_timer_create(&args, &auto_timer));
     }
     if (esp_timer_is_active(auto_timer)) {
-        return; /* вже запущений */
+        return;
     }
 
     auto_interval_us = (int64_t)interval_sec * 1000000;
@@ -96,24 +91,19 @@ void feed_cycle(uint8_t portion_size)
     ESP_LOGI(TAG, "цикл насипання: порція=%u, мотор=%d мс",
              portion_size, portion_size * MOTOR_MS_PER_PORTION);
 
-    /* 1. Попереджувальна мелодія: фанфара і "мяу" */
     buzzer_play(feed_melody, feed_melody_len);
     buzzer_sweep(MEOW_HZ_START, MEOW_HZ_PEAK, MEOW_UP_MS);
     buzzer_sweep(MEOW_HZ_PEAK, MEOW_HZ_END, MEOW_DOWN_MS);
 
-    /* 2. Відкрити заслінку приймача */
     servo_set_angle(SERVO_OPEN_DEG);
     vTaskDelay(pdMS_TO_TICKS(SERVO_MOVE_MS));
 
-    /* 3. Крутити диск/мотор пропорційно до порції */
     motor_start();
     vTaskDelay(pdMS_TO_TICKS(portion_size * MOTOR_MS_PER_PORTION));
     motor_stop();
 
-    /* 4. Дати корму часу висипатись з приймача перед закриттям */
     vTaskDelay(pdMS_TO_TICKS(GATE_LINGER_MS));
 
-    /* 5. Закрити заслінку і зняти навантаження з серво */
     servo_set_angle(SERVO_CLOSED_DEG);
     vTaskDelay(pdMS_TO_TICKS(SERVO_MOVE_MS));
     servo_detach();
@@ -148,14 +138,12 @@ static void run_feed(ui_state_t *st)
     st->feeding = true;
     ui_state_publish(st);
 
-    /* Годуємо підтвердженою порцією, і шкала показує саме її (спек 4.5). */
     update_portion_leds(st->portion);
     feed_cycle(st->portion);
 
     st->feeding = false;
-    /* Повертаємось на той самий екран: у меню Portion - до непідтвердженого вибору. */
     update_portion_leds(st->screen == SCREEN_MENU_PORTION ? st->preview : st->portion);
-    xQueueReset(event_queue); /* відкинути все, що накопичилось під час циклу */
+    xQueueReset(event_queue);
 }
 
 void feeder_task(void *arg)
@@ -163,7 +151,6 @@ void feeder_task(void *arg)
     feeder_event_t evt;
     ui_state_t st;
 
-    /* Початковий стан (з NVS) заповнено в app_main до старту задач. */
     ui_state_get(&st);
 
     update_portion_leds(st.portion);

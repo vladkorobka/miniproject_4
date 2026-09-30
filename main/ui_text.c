@@ -44,7 +44,6 @@ void ui_fmt_portion_scale(char out[UI_LINE_LEN + 1])
 
 int ui_portion_digit_col(uint8_t level)
 {
-    /* Клітинки по 4 символи: цифра по центру клітинки " n ". */
     return 4 * level - 2;
 }
 

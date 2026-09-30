@@ -26,7 +26,6 @@ void menu_init(ui_state_t *st, uint8_t portion, bool auto_enabled)
 
 static menu_action_t handle_main(ui_state_t *st, event_type_t evt)
 {
-    /* Поворот і «Назад» на головному екрані нічого не роблять (спек 4.1). */
     if (evt == EVT_ENC_CLICK) {
         st->screen = SCREEN_MENU_ROOT;
         st->cursor = MENU_ROOT_PORTION;
@@ -91,7 +90,7 @@ static menu_action_t handle_auto(ui_state_t *st, event_type_t evt, int8_t value)
         st->screen = SCREEN_MENU_ROOT;
         st->cursor = MENU_ROOT_AUTO;
         if (want == st->auto_enabled) {
-            return act(ACT_NONE, 0);   /* той самий режим: таймер не перезапускаємо */
+            return act(ACT_NONE, 0);
         }
         st->auto_enabled = want;
         return act(ACT_SET_AUTO, want ? 1 : 0);
@@ -107,9 +106,6 @@ static menu_action_t handle_auto(ui_state_t *st, event_type_t evt, int8_t value)
 
 menu_action_t menu_handle(ui_state_t *st, event_type_t evt, int8_t value)
 {
-    /* Годування не залежить від екрана, і меню після нього лишається
-     * тим самим (спек 4.5). Подія таймера могла потрапити в чергу
-     * за мить до вимкнення AUTO - тоді її ігноруємо. */
     if (evt == EVT_BTN_MANUAL) {
         return act(ACT_FEED, 0);
     }

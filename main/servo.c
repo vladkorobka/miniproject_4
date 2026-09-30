@@ -1,12 +1,9 @@
 #include "servo.h"
-
 #include <stdint.h>
-
 #include "driver/ledc.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_err.h"
-
 #include "config.h"
 
 #define SERVO_TIMER      LEDC_TIMER_0
@@ -15,13 +12,9 @@
 #define SERVO_RES        LEDC_TIMER_13_BIT
 #define SERVO_RES_BITS   13
 #define SERVO_FREQ_HZ    50
-
-/* Стандартні межі імпульсу SG90. Якщо заслінка не до кінця
- * закривається/відкривається на реальному сервоприводі - підправ ці
- * значення емпірично (деякі клони відхиляються на ±100-200 мкс). */
-#define SERVO_MIN_US     500    /* 0 градусів */
-#define SERVO_MAX_US     2500   /* 180 градусів */
-#define SERVO_PERIOD_US  20000  /* 20 мс = 50 Гц */
+#define SERVO_MIN_US     500
+#define SERVO_MAX_US     2500
+#define SERVO_PERIOD_US  20000
 
 void servo_init(void)
 {
@@ -30,9 +23,6 @@ void servo_init(void)
         .timer_num       = SERVO_TIMER,
         .duty_resolution = SERVO_RES,
         .freq_hz         = SERVO_FREQ_HZ,
-        /* Джерело такту задане явно: на ESP32-S3 воно спільне для всіх
-         * low-speed таймерів LEDC, тому LEDC_AUTO_CLK на серво і зумері
-         * могло б вибрати різні джерела і другий таймер не налаштувався б. */
         .clk_cfg         = LEDC_USE_APB_CLK,
     };
     ESP_ERROR_CHECK(ledc_timer_config(&timer_conf));
@@ -47,9 +37,6 @@ void servo_init(void)
     };
     ESP_ERROR_CHECK(ledc_channel_config(&channel_conf));
 
-    /* Після подачі живлення фізичний кут заслінки невідомий (той, у якому
-     * серво лишилось при вимкненні). Приводимо її у відомий закритий стан,
-     * інакше корм може сипатись одразу після старту. */
     servo_set_angle(SERVO_CLOSED_DEG);
     vTaskDelay(pdMS_TO_TICKS(SERVO_MOVE_MS));
     servo_detach();

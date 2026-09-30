@@ -19,8 +19,7 @@ void buzzer_init(void)
         .speed_mode      = BUZZER_MODE,
         .timer_num       = BUZZER_TIMER,
         .duty_resolution = BUZZER_RES,
-        .freq_hz         = NOTE_C6,   /* стартова; кожна нота задає свою */
-        /* Те саме джерело такту, що й у серво - див. коментар у servo.c. */
+        .freq_hz         = NOTE_C6,
         .clk_cfg         = LEDC_USE_APB_CLK,
     };
     ESP_ERROR_CHECK(ledc_timer_config(&timer_conf));
@@ -38,7 +37,7 @@ void buzzer_init(void)
 
 static void tone_on(void)
 {
-    int half_duty = (1 << BUZZER_RES_BITS) / 2; /* 50% duty = чистий тон */
+    int half_duty = (1 << BUZZER_RES_BITS) / 2;
     ESP_ERROR_CHECK(ledc_set_duty(BUZZER_MODE, BUZZER_CHANNEL, half_duty));
     ESP_ERROR_CHECK(ledc_update_duty(BUZZER_MODE, BUZZER_CHANNEL));
 }
@@ -53,7 +52,6 @@ void buzzer_sweep(int freq_start, int freq_end, int duration_ms)
 {
     const int step_ms = 10;
 
-    /* Мінімум один крок: інакше при duration_ms < step_ms було б ділення на 0. */
     int steps = duration_ms / step_ms;
     if (steps < 1) {
         steps = 1;

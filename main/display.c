@@ -12,13 +12,13 @@
 
 void display_task(void *arg)
 {
-    static fb_t fb;   /* 1 КБ - не на стеку задачі */
+    static fb_t fb;
     ui_view_t view = { 0 };
     TickType_t last_rtc_read = 0;
     bool rtc_read_once = false;
 
     if (!oled_init()) {
-        vTaskDelete(NULL);   /* без екрана годівничка працює далі (спек 6) */
+        vTaskDelete(NULL);
         return;
     }
 
@@ -37,7 +37,7 @@ void display_task(void *arg)
         }
 
         ui_render(&fb, &view);
-        oled_flush(&fb);   /* помилка - пропускаємо кадр, наступний спробує знову */
+        oled_flush(&fb);
 
         vTaskDelay(pdMS_TO_TICKS(DISPLAY_PERIOD_MS));
     }

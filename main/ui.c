@@ -20,8 +20,6 @@ void ui_render(fb_t *fb, const ui_view_t *v)
     fb_clear(fb);
     ui_fmt_status(line, v->time_valid ? &v->time : NULL, st->portion, v->countdown_sec);
 
-    /* Під час насипання екран меню ховається, але стан меню зберігається
-     * і повертається після циклу (спек 4.5). */
     if (st->feeding) {
         draw_row(fb, 0, line);
         draw_row(fb, 2, "   FEEDING...");
